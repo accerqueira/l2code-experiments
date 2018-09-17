@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Blockly Memory Game for Leo & Lily</title>
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            background-color: #fff;
+            font-family: sans-serif;
+            display: flex;
+            flex-flow: column;
+            overflow: hidden;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%
+        }
+
+        h1 {
+            font-weight: normal;
+            font-size: 140%;
+        }
+
+        #blocklyDiv {
+            height: 100%;
+            flex: 1 1 auto;
+        }
+
+        #threeDiv {
+            height: 100%;
+            flex: 1 1 auto;
+        }
+
+        #controls {
+            position: fixed;
+            text-align: center;
+            bottom: 0px;
+            width: 100%;
+        }
+        
+        #controls.blockly button.blockly {
+            display: inline;
+        }
+
+        #controls.blockly button.three {
+            display: none;
+        }
+
+        #controls.three button.three {
+            display: inline;
+        }
+
+        #controls.three button.blockly {
+            display: none;
+        }
+
+        .disabled {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="blocklyDiv"></div>
+    <div id="threeDiv" class="disabled"></div>
+
+    <p id="controls" class="blockly">
+        <button class="blockly" onclick="toggleAnswer()">Toggle Answer</button>
+        <button class="blockly" onclick="showCode()">Show JavaScript</button>
+        <button class="blockly" onclick="runCode()">Run JavaScript</button>
+        <button class="three" onclick="backToCode()">Back to code</button>
+    </p>
+
+    <xml xmlns="http://www.w3.org/1999/xhtml" id="toolbox" style="display: none;">
+        <category name="Entities" colour="#a55b5b">
+            <block type="Game"></block>
+            <block type="Deck"></block>
+        </category>
+        <category name="Images" colour="#a5805b">
+            <block type="Image_A"></block>
+            <block type="Image_B"></block>
+            <block type="Image_C"></block>
+            <block type="Image_D"></block>
+            <block type="Image_E"></block>
+            <block type="Image_F"></block>
+            <block type="Image_G"></block>
+            <block type="Image_H"></block>
+            <block type="Image_Stripes"></block>
+        </category>
+        <category name="Logic" colour="#93a55b">
+            <block type="controls_whileUntil">
+                <field name="MODE">UNTIL</field>
+            </block>
+            <block type="controls_if"></block>
+            <block type="logic_compare">
+                <field name="OP">EQ</field>
+            </block>
+            <block type="lists_create_with">
+                <mutation items="3"></mutation>
+            </block>
+            <block type="Function_ShuffleCards"></block>
+            <block type="Function_IsEndOfGame"></block>
+            <block type="Function_ShowCardPicked"></block>
+            <block type="Function_AreCardsEqual"></block>
+            <block type="Function_TakeCards"></block>
+            <block type="Function_HideCards"></block>
+            <block type="Function_ShowResults"></block>
+        </category>
+        <!-- <category name="Funções" colour="#805ba5" custom="PROCEDURE"></category>
+        <category name="Variáveis" colour="#a55b93" custom="VARIABLE"></category> -->
+    </xml>
+
+    <xml xmlns="http://www.w3.org/1999/xhtml" id="initialWorkspace" style="display:none">
+        <block type="Game" id="v}C8}c5Ai=QFw`Hz?zc}" x="-62" y="38">
+            <value name="Deck">
+                <block type="Deck" id="cKVG|Q%s#voVJN~8^bg}">
+                    <value name="Frontfaces">
+                        <block type="lists_create_with" id="i|f!W2!)/OK`-AD]#?es">
+                            <mutation items="2"></mutation>
+                        </block>
+                    </value>
+                </block>
+            </value>
+        </block>
+    </xml>
+
+    <xml xmlns="http://www.w3.org/1999/xhtml" id="targetWorkspace" style="display:none">
+        <block type="Game" id="v}C8}c5Ai=QFw`Hz?zc}" x="-62" y="38">
+            <value name="Deck">
+                <block type="Deck" id="cKVG|Q%s#voVJN~8^bg}">
+                    <value name="Frontfaces">
+                        <block type="lists_create_with" id="i|f!W2!)/OK`-AD]#?es">
+                            <mutation items="8"></mutation>
+                            <value name="ADD0">
+                                <block type="Image_A" id="E+3^)B7:f1(`zMR1~.8z"></block>
+                            </value>
+                            <value name="ADD1">
+                                <block type="Image_B" id="Cd,:~n9Sp#1nD@Y9.oCn"></block>
+                            </value>
+                            <value name="ADD2">
+                                <block type="Image_C" id="NKy3@}!uJM(u?nEU.[:m"></block>
+                            </value>
+                            <value name="ADD3">
+                                <block type="Image_D" id="JxqDR3cQu}IMsOWX}-p-"></block>
+                            </value>
+                            <value name="ADD4">
+                                <block type="Image_E" id="x/=Ic1Wv[B7ANDR*UN.t"></block>
+                            </value>
+                            <value name="ADD5">
+                                <block type="Image_F" id="xe]S9I,4xZp+I{Gf618D"></block>
+                            </value>
+                            <value name="ADD6">
+                                <block type="Image_G" id="(pDtqee%*x+jyWV:q77l"></block>
+                            </value>
+                            <value name="ADD7">
+                                <block type="Image_H" id="N7zMhQA.hJODB7)A;ssj"></block>
+                            </value>
+                        </block>
+                    </value>
+                    <value name="Backface">
+                        <block type="Image_Stripes" id="d{Iq!Ns8m1J(?0Z/aogl"></block>
+                    </value>
+                </block>
+            </value>
+            <statement name="Rules">
+                <block type="Function_ShuffleCards" id="2Aw%[e$Uj8g7@%Nz|a,-" />
+                <next>
+                    <block type="controls_whileUntil" id="%E-cjpzbKt}yXO(nfunz">
+                        <field name="MODE">UNTIL</field>
+                        <value name="BOOL">
+                            <block type="Function_IsEndOfGame" id="2Aw%[e$Uj8g7@%Nz|a,-" />
+                        </value>
+                        <statement name="DO">
+                            <block type="Function_ShowCardPicked" id="2Aw%[e$Uj8g7@%Nz|a,-" />
+                            <next>
+                                <block type="Function_ShowCardPicked" id="NC}j/pbmi`E`QV@h{5+{" />
+                                <next>
+                                    <block type="controls_if" id="A6*BQ*0~xcy#-+w?$0*4" x="38" y="38">
+                                        <mutation else="1"></mutation>
+                                        <value name="IF0">
+                                            <block type="Function_AreCardsEqual" id="T{hV|;P;r/@Hal*ZEjyb" />
+                                        </value>
+                                        <statement name="DO0">
+                                            <block type="Function_TakeCards" id="T{hV|;P;r/@Hal*ZEjyb" />
+                                        </statement>
+                                        <statement name="ELSE">
+                                            <block type="Function_HideCards" id="rAZ/!6C7oa47/dI.-GKP" />
+                                        </statement>
+                                    </block>
+                                </next>
+                            </next>
+                        </statement>
+                    </block>
+                </next>
+            </statement>
+        </block>
+    </xml>
+
+    <script src="https://cdn.jsdelivr.net/npm/blockly@1.0.0/blockly_compressed.js" integrity="sha256-SVk89B/kvCsWqGaYNJyDsBH7tjMdBnFFnPAtxw2H/hw=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/blockly@1.0.0/blocks_compressed.js" integrity="sha256-ytkoPOXQpgJU5toNxIsB1ge0jvqs14XJ/RQJn3GLriE=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/blockly@1.0.0/javascript_compressed.js" integrity="sha256-+J+RY78x+H6qwn6oB+ZAXypliSRitiGxVxl4WIQWHBM=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/blockly@1.0.0/msg/js/en.js" integrity="sha256-19l8V/mUWNpB0rGU8GaY8OBBpMAoDaGOJOkoo0N1l/M=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.96.0/build/three.min.js" integrity="sha256-ksgKHTcgfv915e2MDbPN4tleY1STytc1v9qA2PAl8Xs=" crossorigin="anonymous"></script>
+
+    <script src="block-definitions.js"></script>
+    <script src="block-codegen-javascript.js"></script>
+
+    <script>
+        let container, scene, camera, renderer, redererTimer, sceneCards;
+        let mixers = []
+
+        function backToCode() {
+            cancelAnimationFrame(rendererTimer);
+            container.removeChild(renderer.domElement);
+            document.querySelector('#blocklyDiv').classList.remove('disabled');
+            document.querySelector('#controls').classList.add('blockly');
+            document.querySelector('#controls').classList.remove('three');
+            document.querySelector('#threeDiv').classList.add('disabled');
+            document.onkeydown = null;
+        }
+
+        function init() {
+            document.querySelector('#blocklyDiv').classList.add('disabled');
+            document.querySelector('#controls').classList.remove('blockly');
+            document.querySelector('#controls').classList.add('three');
+            document.querySelector('#threeDiv').classList.remove('disabled');
+            document.onkeydown = function(evt) {
+                evt = evt || window.event;
+                var isEscape = false;
+                if ("key" in evt) {
+                    isEscape = (evt.key == "Escape" || evt.key == "Esc");
+                } else {
+                    isEscape = (evt.keyCode == 27);
+                }
+                if (isEscape) {
+                    backToCode();
+                }
+            };
+
+            container = document.querySelector('#threeDiv');
+            // CAMERA
+            camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 1, 1500);
+            // camera = new THREE.OrthographicCamera(10 / -2, 10 / 2, 7 / 2, 7 / -2, 1, 1500);
+            camera.position.set(0, 7, 4);
+            camera.lookAt(new THREE.Vector3());
+            // SCENE
+            scene = new THREE.Scene();
+            //
+            group = new THREE.Group();
+            scene.add(group);
+            // group.add(new THREE.GridHelper(8, 12));
+            const table = new THREE.Mesh(new THREE.BoxBufferGeometry(8, 1, 8), new THREE.MeshBasicMaterial({
+                color: 0x663300
+            }));
+            table.position.set(0, -1, 0);
+            group.add(table);
+            sceneCards = new THREE.Group();
+            group.add(sceneCards);
+            // RENDERER
+            renderer = new THREE.WebGLRenderer({
+                antialias: true
+            });
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            container.appendChild(renderer.domElement);
+
+            window.addEventListener('resize', onWindowResize, false);
+
+            animate();
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function animate() {
+            // group.rotation.y = performance.now() / 3000;
+            for (const mixer of mixers) {
+                mixer.update(clock.getDelta());
+            }
+            renderer.render(scene, camera);
+            rendererTimer = requestAnimationFrame(animate);
+        }
+
+        function materialFromImage(image, index, length) {
+            let canvas;
+            if (index !== undefined) {
+                canvas = document.createElement('canvas');
+                canvas.width = 256;
+                canvas.height = 256;
+
+                const context = canvas.getContext('2d');
+                context.drawImage(image, index*image.width/length, 0, 256, 256, 0, 0, 256, 256);
+            }
+            const texture = new THREE.CanvasTexture(canvas || image);
+            texture.wrapS = THREE.RepeatWrapping;
+            texture.repeat.x = - 1;
+            const material = new THREE.MeshBasicMaterial({
+                color: 0xff8888,
+                map: texture
+            });
+            return material;
+        }
+
+        function loadImage(url) {
+            return new Promise((resolve, reject) => {
+                new THREE.ImageLoader()
+                    .setCrossOrigin('*')
+                    .load(url, resolve, null, reject);
+            });
+        }
+
+        function loadImages(urls) {
+            return Promise.all(urls.map(loadImage));
+        }
+
+        function drawSquare(x1, z1, x2, z2) {
+            var square = new THREE.Geometry();
+            square.vertices.push(new THREE.Vector3(x1, 0, z1));
+            square.vertices.push(new THREE.Vector3(x1, 0, z2));
+            square.vertices.push(new THREE.Vector3(x2, 0, z1));
+            square.vertices.push(new THREE.Vector3(x2, 0, z2));
+            square.faces.push(new THREE.Face3(0, 1, 2));
+            square.faces.push(new THREE.Face3(2, 1, 3));
+            square.faceVertexUvs[0] = [];
+            square.faceVertexUvs[0].push([
+                new THREE.Vector2(1, 1),
+                new THREE.Vector2(1, 0),
+                new THREE.Vector2(0, 1),
+            ], [
+                new THREE.Vector2(0, 1),
+                new THREE.Vector2(1, 0),
+                new THREE.Vector2(0, 0),
+            ]);
+            square.uvsNeedUpdate = true;
+            return square;
+        }
+
+        // const geometry = new THREE.BoxBufferGeometry(1, 1, 1);
+        // const geometry = new THREE.BoxBufferGeometry(1, 0.01, 1);
+        const square = drawSquare(0, 0, 0.9, 0.9);
+
+        function CreateCard(front, back, x, z) {
+            var meshFront = new THREE.Mesh(square, front);
+            var meshBack = new THREE.Mesh(square, back);
+            meshBack.rotation.set(0, 0, Math.PI);
+
+            const card = new THREE.Group();
+            card.add(meshFront);
+            card.add(meshBack);
+
+            card.position.set(x, Math.random() * 0.01, z);
+            // card.rotation.set(Math.random() * 2 * Math.PI, Math.random() * 2 * Math.PI, Math.random() * 2 * Math.PI);
+            // cards.add(card);
+            return card;
+        }
+
+        function animFlipDownCard(card) {
+            card.mesh.rotation.set(0, 0, Math.PI);
+            // return new Promise((resolve, reject) => {
+            //     const mixer = new THREE.AnimationMixer(model);
+            //     mixer.clipAnimation(new AnimationClip());
+            //     mixer.addEventListener('finished', resolve);
+            //     mixers.push(mixer);
+            // });
+        }
+
+        function animShuffleCards(cards) {
+            cards = cards.slice();
+
+            const columns = Math.ceil(Math.pow(cards.length, 1 / 2));
+            const rows = cards.length / columns;
+
+            const xoff = -columns / 2;
+            const zoff = -rows / 2;
+            for (let x = 0; x < columns; x++) {
+                for (let z = 0; z < rows; z++) {
+                    let nearest = {
+                        cardIndex: 0,
+                        distance: Infinity
+                    };
+                    const spot = new THREE.Vector3(x + xoff, 0, z + zoff);
+                    for (var i = 0; i < cards.length; i++) {
+                        const card = cards[i];
+                        const distance = card.mesh.position.distanceTo(spot);
+                        if (distance < nearest.distance) {
+                            nearest = {
+                                cardIndex: i,
+                                distance
+                            };
+                        }
+                    }
+                    cards[nearest.cardIndex].mesh.position.set(spot.x, Math.random() * 0.01, spot.z);
+                    const [card] = cards.splice(nearest.cardIndex, 1);
+                    cards.push(card);
+                    cards = cards.slice(0, -1);
+                }
+            }
+            // return new Promise((resolve, reject) => {
+            //     const mixer = new THREE.AnimationMixer(model);
+            //     mixer.clipAnimation(new AnimationClip());
+            //     mixer.addEventListener('finished', resolve);
+            //     mixers.push(mixer);
+            // });
+        }
+
+
+        function setup(cards) {
+            init();
+
+            const fronts = cards.fronts.map((front) => {
+                return `images/${front}.png`;
+            });
+            const back = `images/${cards.back}.png`;
+
+            return loadImages([...fronts, back]).then((images) => {
+                const materialBack = materialFromImage(images.pop());
+
+                const table = [];
+                // images.map(materialFromImage).forEach((materialFront, index) => {
+                images.forEach((image, index) => {
+                    for (var i = 0; i < 2; i++) {
+                        const materialFront = materialFromImage(image, i, 2); // split image in 2
+                        const mesh = CreateCard(materialFront, materialBack, Math.random() * 4 - 2.5, Math.random() * 4 - 2.5);
+                        table.push({
+                            name: cards.fronts[index],
+                            mesh,
+                            show: false,
+                        });
+                        sceneCards.add(mesh);
+                    }
+                });
+
+                return {
+                    table
+                };
+            });
+        }
+
+        function NewGame(cards, rules) {
+            // console.log('NewGame');
+            setup(cards).then((ctx) => {
+                let limit = 1000;
+                const iterator = rules(ctx);
+                const step = (input) => {
+                    if (--limit <= 0) return;
+
+                    // console.log(`=> ${JSON.stringify(input)}`);
+                    let {
+                        value,
+                        done
+                    } = iterator.next(input);
+                    if (done) return;
+
+                    const func = value.func;
+                    const args = value.args || [];
+                    // console.log(`${func.name}`);
+                    Promise.resolve(func(ctx, ...args)).then(step);
+                    // console.log(`${func.name}(${['ctx', ...args].map(JSON.stringify).join(', ')})`);
+                };
+
+                step();
+            });
+        }
+
+        function IsEndOfGame(ctx) {
+            return ctx.table.every((card) => !card.mesh.visible);
+            // console.log(JSON.stringify(ctx));
+            // return new Promise((resolve, reject) => {
+            //     const answer = ctx.table.every((card) => !card.mesh.visible);
+            //     setTimeout(resolve, 1000, answer);
+            //     // setTimeout(resolve, 1000, Math.random()>0.5);
+            // });
+        }
+
+        function AreCardsEqual(ctx) {
+            return Boolean(ctx.table.filter(IsCardUp).reduce((acc, curr) => {
+                // console.log(acc, curr);
+                return (acc.name === curr.name) ? acc : false;
+            }));
+        }
+
+        function IsCardUp(card) {
+            return card.mesh.visible && card.mesh.rotation.z === 0;
+        }
+
+        function IsCardDown(card) {
+            return card.mesh.visible && card.mesh.rotation.z !== 0;
+        }
+
+        function ShuffleCards(ctx) {
+            // flip all cards down and mix them up
+            ctx.table.map(animFlipDownCard);
+            animShuffleCards(ctx.table);
+        }
+
+        function ShowCardPicked(ctx) {
+            const cardsAvailable = ctx.table.filter(IsCardDown);
+            // const idx = Math.floor(Math.random() * cardsAvailable.length);
+
+            return new Promise((resolve, reject) => {
+                var raycaster = new THREE.Raycaster();
+                var mouse = new THREE.Vector2();
+
+                renderer.domElement.addEventListener('click', onclick, true);
+
+                function onclick(event) {
+                    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+                    raycaster.setFromCamera(mouse, camera);
+                    // console.log(cardsAvailable.map((card) => card.mesh));
+                    var intersects = raycaster.intersectObjects(cardsAvailable.map((card) => card.mesh), true);
+                    if (intersects.length > 0) {
+                        // console.log(intersects.map((intersect) => intersect.object.parent.id));
+                        // console.log(cardsAvailable.map((card) => card.mesh.id));
+                        const intersectsObjectIDs = intersects.map((intersect) => intersect.object.parent.id);
+                        const selectedCards = cardsAvailable.filter((card) => intersectsObjectIDs.includes(card.mesh.id));
+                        // console.log(selectedCards.map((card) => card.name));
+                        selectedCards.forEach((card) => {
+                            if (IsCardDown(card)) {
+                                card.mesh.rotation.set(0, 0, 0);
+                                renderer.domElement.removeEventListener('click', onclick, true);
+                                resolve();
+                            }
+                        });
+                    }
+                }
+                // setTimeout(resolve, 10000);
+            });
+
+            // const cardsAvailable = ctx.table.filter(IsCardDown);
+            // const idx = Math.floor(Math.random() * cardsAvailable.length);
+            // cardsAvailable[idx].mesh.rotation.set(0, 0, 0);
+            // 
+            // return new Promise((resolve, reject) => {
+            //     setTimeout(resolve, 1000);
+            // });
+        }
+
+        function HideCards(ctx) {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    ctx.table.filter(IsCardUp).forEach((card) => {
+                        card.mesh.rotation.set(0, 0, Math.PI)
+                    });
+                    resolve()
+                }, 2000);
+            });
+        }
+
+        function TakeCards(ctx) {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    ctx.table.filter(IsCardUp).forEach((card) => {
+                        card.mesh.visible = false;
+                    });
+                    resolve()
+                }, 2000);
+            });
+            // const idx = Math.floor(Math.random() * ctx.table.length);
+            // ctx.table[idx].mesh.visible = false;
+            // const cards = ctx.table;
+            // const index1 = Math.max(card1.index, card2.index);
+            // const index2 = Math.min(card1.index, card2.index);
+            // ctx.table.splice(index1, 1);
+            // ctx.table.splice(index2, 1);
+        }
+
+        function ShowResults(ctx) {
+            return alert('Grats!!');
+        }
+
+        function shuffle(array) {
+            var m = array.length,
+                t, i;
+            // While there remain elements to shuffle…
+            while (m) {
+                // Pick a remaining element…
+                i = Math.floor(Math.random() * m--);
+                // And swap it with the current element.
+                t = array[m];
+                array[m] = array[i];
+                array[i] = t;
+            }
+            return array;
+        }
+    </script>
+
+    <script>
+        const workspaceBlocks = Blockly.inject('blocklyDiv', {
+            media: 'node_modules/blockly/media/',
+            toolbox: document.getElementById('toolbox')
+        });
+        let workspaceXmlBackup = null;
+
+        Blockly.Xml.domToWorkspace(document.getElementById('initialWorkspace'), workspaceBlocks);
+
+        function toggleAnswer() {
+            if (workspaceXmlBackup === null) {
+                workspaceXmlBackup = Blockly.Xml.workspaceToDom(workspaceBlocks);
+                workspaceBlocks.clear();
+                Blockly.Xml.domToWorkspace(document.getElementById('targetWorkspace'), workspaceBlocks);
+            } else {
+                workspaceBlocks.clear();
+                Blockly.Xml.domToWorkspace(workspaceXmlBackup, workspaceBlocks);
+                workspaceXmlBackup = null;
+            }
+        }
+
+        function showCode() {
+            // Generate JavaScript code and display it.
+            Blockly.JavaScript.INFINITE_LOOP_TRAP = null;
+            try {
+                var code = Blockly.JavaScript.workspaceToCode(workspaceBlocks);
+                alert(code);
+            } catch (e) {
+                alert(e);
+            }
+        }
+
+        function runCode() {
+            // Generate JavaScript code and run it.
+            window.LoopTrap = 1000;
+            Blockly.JavaScript.INFINITE_LOOP_TRAP =
+                'if (--window.LoopTrap == 0) throw "Infinite loop.";\n';
+            var code = Blockly.JavaScript.workspaceToCode(workspaceBlocks);
+            Blockly.JavaScript.INFINITE_LOOP_TRAP = null;
+            try {
+                eval(code);
+            } catch (e) {
+                alert(e);
+            }
+        }
+    </script>
+
+</body>
+
+</html>
